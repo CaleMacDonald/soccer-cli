@@ -11,6 +11,8 @@ builds:
       - linux
       - windows
       - darwin
+    ldflags:
+      - -s -w -X github.com/CaleMacDonald/soccer-cli/internal/build.Version={{.Version}} -X github.com/CaleMacDonald/soccer-cli/internal/build.Date={{time "2006-01-02"}}
 archives:
   - replacements:
       darwin: Darwin

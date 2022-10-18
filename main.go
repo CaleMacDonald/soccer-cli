@@ -1,17 +1,113 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/CaleMacDonald/soccer-cli/pkg/cmd/factory"
+	"github.com/CaleMacDonald/soccer-cli/pkg/cmd/root"
+	"github.com/CaleMacDonald/soccer-cli/pkg/cmdutil"
+	"github.com/CaleMacDonald/soccer-cli/pkg/iostreams"
+	"github.com/MakeNowJust/heredoc"
+	"github.com/spf13/cobra"
+	"io"
 	"os"
-	"soccer-cli/cmd"
+	"strings"
+)
+
+var (
+	buildVersion = "dev"
+	buildDate    = "today"
+)
+
+type exitCode int
+
+const (
+	exitOK     exitCode = 0
+	exitError  exitCode = 1
+	exitCancel exitCode = 2
+	exitAuth   exitCode = 4
 )
 
 func main() {
-	rootCmd := cmd.NewRootCommand()
-	command := rootCmd.CobraCommand()
+	code := mainRun()
+	os.Exit(int(code))
+}
 
-	if err := command.Execute(); err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
-		os.Exit(1)
+func mainRun() exitCode {
+	cmdFactory := factory.New(buildVersion)
+
+	stderr := cmdFactory.IOStreams.ErrOut
+
+	rootCmd := root.NewCmdRoot(cmdFactory, buildVersion, buildDate)
+
+	cfg, err := cmdFactory.Config()
+	if err != nil {
+		fmt.Fprintf(stderr, "failed to read configuration:  %s\n", err)
+		return exitError
+	}
+
+	authError := errors.New("authError")
+	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		// require that the user is authenticated before running most commands
+		if cmdutil.IsAuthCheckEnabled(cmd) && !cmdutil.CheckAuth(cfg) {
+			fmt.Fprintf(stderr, authHelp())
+			return authError
+		}
+
+		return nil
+	}
+
+	if cmd, err := rootCmd.ExecuteC(); err != nil {
+		var pagerPipeError *iostreams.ErrClosedPagerPipe
+		var noResultsError cmdutil.NoResultsError
+
+		if err == cmdutil.SilentError {
+			return exitError
+		} else if cmdutil.IsUserCancellation(err) {
+			if errors.Is(err, terminal.InterruptErr) {
+				// ensure the next shell prompt has its own line
+				fmt.Fprintf(stderr, "\n")
+			}
+			return exitCancel
+		} else if errors.Is(err, authError) {
+			return exitAuth
+		} else if errors.As(err, &pagerPipeError) {
+			// ignore the error raised when piping to a closed pager
+			return exitOK
+		} else if errors.As(err, &noResultsError) {
+			if cmdFactory.IOStreams.IsStdoutTTY() {
+				fmt.Fprintln(stderr, noResultsError.Error())
+			}
+			// no results are not treated as a command failure
+			return exitOK
+		}
+
+		printError(stderr, err, cmd)
+	}
+
+	if root.HasFailed() {
+		return exitError
+	}
+
+	return exitOK
+}
+
+func authHelp() string {
+	return heredoc.Doc(`
+		To get started with Soccer CLI, please run:  soccer-cli auth set <token>
+		Alternatively, populate the SOCCER_CLI_AUTH_TOKEN environment variable with a Football Data API authentication token.
+	`)
+}
+
+func printError(out io.Writer, err error, cmd *cobra.Command) {
+	fmt.Fprintln(out, err)
+
+	var flagError *cmdutil.FlagError
+	if errors.As(err, &flagError) || strings.HasPrefix(err.Error(), "unknown command ") {
+		if !strings.HasSuffix(err.Error(), "\n") {
+			fmt.Fprintln(out)
+		}
+		fmt.Fprintln(out, cmd.UsageString())
 	}
 }
