@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/CaleMacDonald/soccer-cli/internal/build"
 	"github.com/CaleMacDonald/soccer-cli/pkg/cmd/factory"
 	"github.com/CaleMacDonald/soccer-cli/pkg/cmd/root"
 	"github.com/CaleMacDonald/soccer-cli/pkg/cmdutil"
@@ -13,11 +14,6 @@ import (
 	"io"
 	"os"
 	"strings"
-)
-
-var (
-	buildVersion = "dev"
-	buildDate    = "today"
 )
 
 type exitCode int
@@ -35,6 +31,9 @@ func main() {
 }
 
 func mainRun() exitCode {
+	buildDate := build.Date
+	buildVersion := build.Version
+
 	cmdFactory := factory.New(buildVersion)
 
 	stderr := cmdFactory.IOStreams.ErrOut
