@@ -8,6 +8,7 @@ import (
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 
+	completionCmd "github.com/CaleMacDonald/soccer-cli/pkg/cmd/completion"
 	versionCmd "github.com/CaleMacDonald/soccer-cli/pkg/cmd/version"
 )
 
@@ -44,6 +45,7 @@ func NewCmdRoot(f *cmdutil.Factory, version, buildDate string) *cobra.Command {
 	cmd.AddCommand(standings.NewCmdStandings(f))
 	cmd.AddCommand(leagues.NewCmdLeagues(f, nil))
 	cmd.AddCommand(auth.NewCmdAuth(f))
+	cmd.AddCommand(completionCmd.NewCmdCompletion(f.IOStreams))
 
 	cmd.AddCommand(NewHelpTopic(f.IOStreams, "environment"))
 	cmd.AddCommand(NewHelpTopic(f.IOStreams, "exit-codes"))
