@@ -62,15 +62,15 @@ func NewHelpTopic(ios *iostreams.IOStreams, topic string) *cobra.Command {
 	return cmd
 }
 
-func helpTopicHelpFunc(w io.Writer, command *cobra.Command, args []string) {
-	fmt.Fprint(w, command.Long)
+func helpTopicHelpFunc(w io.Writer, command *cobra.Command, _ []string) {
+	_, _ = fmt.Fprint(w, command.Long)
 	if command.Example != "" {
-		fmt.Fprintf(w, "\n\nEXAMPLES\n")
-		fmt.Fprint(w, text.Indent(command.Example, "  "))
+		_, _ = fmt.Fprintf(w, "\n\nEXAMPLES\n")
+		_, _ = fmt.Fprint(w, text.Indent(command.Example, "  "))
 	}
 }
 
 func helpTopicUsageFunc(w io.Writer, command *cobra.Command) error {
-	fmt.Fprintf(w, "Usage: soccer-cli help %s", command.Use)
+	_, _ = fmt.Fprintf(w, "Usage: soccer-cli help %s", command.Use)
 	return nil
 }

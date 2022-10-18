@@ -13,17 +13,17 @@ import (
 )
 
 func rootUsageFunc(w io.Writer, command *cobra.Command) error {
-	fmt.Fprintf(w, "Usage: %s", command.UseLine())
+	_, _ = fmt.Fprintf(w, "Usage: %s", command.UseLine())
 
 	subcommands := command.Commands()
 	if len(subcommands) > 0 {
-		fmt.Fprintf(w, "\n\nAvailable Commands:\n")
+		_, _ = fmt.Fprintf(w, "\n\nAvailable Commands:\n")
 		for _, c := range subcommands {
 			if c.Hidden {
 				continue
 			}
 
-			fmt.Fprintf(w, "  %s\n", c.Name())
+			_, _ = fmt.Fprintf(w, "  %s\n", c.Name())
 		}
 
 		return nil
@@ -31,8 +31,8 @@ func rootUsageFunc(w io.Writer, command *cobra.Command) error {
 
 	flagUsages := command.LocalFlags().FlagUsages()
 	if flagUsages != "" {
-		fmt.Fprintln(w, "\n\nFlags:")
-		fmt.Fprintf(w, text.Indent(dedent(flagUsages), "  "))
+		_, _ = fmt.Fprintln(w, "\n\nFlags:")
+		_, _ = fmt.Fprintf(w, text.Indent(dedent(flagUsages), "  "))
 	}
 
 	return nil
@@ -42,7 +42,7 @@ func rootUsageFunc(w io.Writer, command *cobra.Command) error {
 // This matches Cobra's behavior for root command, which Cobra
 // confusingly doesn't apply to nested commands.
 func nestedSuggestFunc(w io.Writer, command *cobra.Command, arg string) {
-	fmt.Fprintf(w, "unknown command %q for %q\n", arg, command.CommandPath())
+	_, _ = fmt.Fprintf(w, "unknown command %q for %q\n", arg, command.CommandPath())
 
 	var candidates []string
 	if arg == "help" {
@@ -55,13 +55,13 @@ func nestedSuggestFunc(w io.Writer, command *cobra.Command, arg string) {
 	}
 
 	if len(candidates) > 0 {
-		fmt.Fprint(w, "\nDid you mean this?\n")
+		_, _ = fmt.Fprint(w, "\nDid you mean this?\n")
 		for _, c := range candidates {
-			fmt.Fprintf(w, "\t%s\n", c)
+			_, _ = fmt.Fprintf(w, "\t%s\n", c)
 		}
 	}
 
-	fmt.Fprint(w, "\n")
+	_, _ = fmt.Fprint(w, "\n")
 	_ = rootUsageFunc(w, command)
 }
 
@@ -69,7 +69,7 @@ func isRootCmd(command *cobra.Command) bool {
 	return command != nil && !command.HasParent()
 }
 
-func rootFlagErrorFunc(cmd *cobra.Command, err error) error {
+func rootFlagErrorFunc(_ *cobra.Command, err error) error {
 	if err == pflag.ErrHelp {
 		return err
 	}
@@ -86,10 +86,10 @@ func HasFailed() bool {
 func rootHelpFunc(f *cmdutil.Factory, command *cobra.Command, args []string) {
 	if isRootCmd(command) {
 		if versionVal, err := command.Flags().GetBool("version"); err == nil && versionVal {
-			fmt.Fprint(f.IOStreams.Out, command.Annotations["versionInfo"])
+			_, _ = fmt.Fprint(f.IOStreams.Out, command.Annotations["versionInfo"])
 			return
 		} else if err != nil {
-			fmt.Fprintln(f.IOStreams.ErrOut, err)
+			_, _ = fmt.Fprintln(f.IOStreams.ErrOut, err)
 			hasFailed = true
 			return
 		}
@@ -104,9 +104,9 @@ func rootHelpFunc(f *cmdutil.Factory, command *cobra.Command, args []string) {
 	}
 
 	namePadding := 12
-	coreCommands := []string{}
-	actionsCommands := []string{}
-	additionalCommands := []string{}
+	var coreCommands []string
+	var actionsCommands []string
+	var additionalCommands []string
 	for _, c := range command.Commands() {
 		if c.Short == "" {
 			continue
@@ -145,7 +145,7 @@ func rootHelpFunc(f *cmdutil.Factory, command *cobra.Command, args []string) {
 			"\n\nFor more information about output formatting flags, see `soccer-cli help formatting`."
 	}
 
-	helpEntries := []helpEntry{}
+	var helpEntries []helpEntry
 	if longText != "" {
 		helpEntries = append(helpEntries, helpEntry{"", longText})
 	}
@@ -207,13 +207,13 @@ Use 'soccer-cli <command> <subcommand> --help' for more information about a comm
 	for _, e := range helpEntries {
 		if e.Title != "" {
 			// If there is a title, add indentation to each line in the body
-			fmt.Fprintln(out, cs.Bold(e.Title))
-			fmt.Fprintln(out, text.Indent(strings.Trim(e.Body, "\r\n"), "  "))
+			_, _ = fmt.Fprintln(out, cs.Bold(e.Title))
+			_, _ = fmt.Fprintln(out, text.Indent(strings.Trim(e.Body, "\r\n"), "  "))
 		} else {
 			// If there is no title print the body as is
-			fmt.Fprintln(out, e.Body)
+			_, _ = fmt.Fprintln(out, e.Body)
 		}
-		fmt.Fprintln(out)
+		_, _ = fmt.Fprintln(out)
 	}
 }
 
@@ -253,7 +253,7 @@ func dedent(s string) string {
 
 	var buf bytes.Buffer
 	for _, l := range lines {
-		fmt.Fprintln(&buf, strings.TrimPrefix(l, strings.Repeat(" ", minIndent)))
+		_, _ = fmt.Fprintln(&buf, strings.TrimPrefix(l, strings.Repeat(" ", minIndent)))
 	}
 	return strings.TrimSuffix(buf.String(), "\n")
 }

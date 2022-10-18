@@ -47,14 +47,14 @@ func statusRun(opts *Options) error {
 
 	token := cfg.AuthToken()
 	if len(token) == 0 {
-		fmt.Fprintln(opts.IO.ErrOut, "no authentication token is set")
+		_, _ = fmt.Fprintln(opts.IO.ErrOut, "no authentication token is set")
 		return cmdutil.SilentError
 	}
 
 	if opts.ShowToken {
-		fmt.Fprintf(opts.IO.Out, "authentication token is present and set to %s\n", token)
+		_, _ = fmt.Fprintf(opts.IO.Out, "authentication token is present and set to %s\n", token)
 	} else {
-		fmt.Fprintln(opts.IO.Out, "authentication token is present")
+		_, _ = fmt.Fprintln(opts.IO.Out, "authentication token is present")
 	}
 
 	return nil

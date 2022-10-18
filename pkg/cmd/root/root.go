@@ -41,7 +41,7 @@ func NewCmdRoot(f *cmdutil.Factory, version, buildDate string) *cobra.Command {
 	})
 	cmd.SetFlagErrorFunc(rootFlagErrorFunc)
 
-	cmd.AddCommand(versionCmd.NewCmdVersion(f, version, buildDate))
+	cmd.AddCommand(versionCmd.NewCmdVersion(f))
 	cmd.AddCommand(standings.NewCmdStandings(f))
 	cmd.AddCommand(leagues.NewCmdLeagues(f, nil))
 	cmd.AddCommand(auth.NewCmdAuth(f))

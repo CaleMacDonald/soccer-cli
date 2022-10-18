@@ -11,6 +11,8 @@ func ttySize() (int, int, error) {
 	if err != nil {
 		return -1, -1, err
 	}
-	defer f.Close()
+	defer func(f *os.File) {
+		_ = f.Close()
+	}(f)
 	return term.GetSize(int(f.Fd()))
 }

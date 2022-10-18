@@ -43,9 +43,9 @@ func tokenRun(opts *Options) error {
 	token := cfg.AuthToken()
 
 	if len(token) > 0 {
-		fmt.Fprintf(opts.IO.Out, "%s\n", token)
+		_, _ = fmt.Fprintf(opts.IO.Out, "%s\n", token)
 	} else {
-		fmt.Fprintf(opts.IO.Out, "no authentication token\n")
+		_, _ = fmt.Fprintf(opts.IO.Out, "no authentication token\n")
 	}
 
 	return nil

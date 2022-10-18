@@ -6,7 +6,7 @@ import (
 	"github.com/CaleMacDonald/soccer-cli/pkg/iostreams"
 )
 
-func New(appVersion string) *cmdutil.Factory {
+func New() *cmdutil.Factory {
 	f := &cmdutil.Factory{
 		Config:         configFunc(),
 		ExecutableName: "soccer-cli",

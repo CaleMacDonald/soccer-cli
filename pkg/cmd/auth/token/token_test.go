@@ -20,7 +20,7 @@ func TestNewCmdToken(t *testing.T) {
 			opts: Options{
 				Config: func() (config.Config, error) {
 					cfg := config.NewTestConfig()
-					cfg.SetAuthToken("token_123")
+					_ = cfg.SetAuthToken("token_123")
 					return cfg, nil
 				},
 			},

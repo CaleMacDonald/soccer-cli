@@ -73,7 +73,7 @@ func Test_statusRun(t *testing.T) {
 			name: "no auth token",
 			opts: &Options{},
 			cfgStubs: func(c *config.ConfigMock) {
-				c.SetAuthToken("")
+				_ = c.SetAuthToken("")
 			},
 			wantErr:    "SilentError",
 			wantErrOut: regexp.MustCompile("no authentication token is set\n"),
@@ -82,7 +82,7 @@ func Test_statusRun(t *testing.T) {
 			name: "all good",
 			opts: &Options{},
 			cfgStubs: func(c *config.ConfigMock) {
-				c.SetAuthToken("abc123")
+				_ = c.SetAuthToken("abc123")
 			},
 			wantStdOut: regexp.MustCompile(`authentication token is present\n`),
 		},
@@ -92,7 +92,7 @@ func Test_statusRun(t *testing.T) {
 				ShowToken: true,
 			},
 			cfgStubs: func(c *config.ConfigMock) {
-				c.SetAuthToken("abc123")
+				_ = c.SetAuthToken("abc123")
 			},
 			wantStdOut: regexp.MustCompile(`authentication token is present and set to abc123\n`),
 		},

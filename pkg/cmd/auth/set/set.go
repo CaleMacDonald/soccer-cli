@@ -69,7 +69,7 @@ func setRun(opts *Options) error {
 
 	err = cfg.SetAuthToken(opts.ApiKey)
 	if err == nil {
-		fmt.Fprintln(opts.IO.Out, "Auth token is now set")
+		_, _ = fmt.Fprintln(opts.IO.Out, "Auth token is now set")
 	}
 
 	return err

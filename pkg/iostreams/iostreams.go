@@ -118,7 +118,7 @@ func System() *IOStreams {
 		}
 	}
 
-	io := &IOStreams{
+	ios := &IOStreams{
 		In:           os.Stdin,
 		originalOut:  os.Stdout,
 		Out:          colorable.NewColorable(os.Stdout),
@@ -131,13 +131,13 @@ func System() *IOStreams {
 	}
 
 	if stdoutIsTTY && stderrIsTTY {
-		io.progressIndicatorEnabled = true
+		ios.progressIndicatorEnabled = true
 	}
 
 	// prevent duplicate isTerminal queries now that we know the answer
-	io.SetStdoutTTY(stdoutIsTTY)
-	io.SetStderrTTY(stderrIsTTY)
-	return io
+	ios.SetStdoutTTY(stdoutIsTTY)
+	ios.SetStderrTTY(stderrIsTTY)
+	return ios
 }
 
 func Test() (ios *IOStreams, in *bytes.Buffer, out *bytes.Buffer, errOut *bytes.Buffer) {
@@ -202,16 +202,6 @@ type fdWriter struct {
 }
 
 func (w *fdWriter) Fd() uintptr {
-	return w.fd
-}
-
-// fdWriteCloser represents a wrapped stdout Writer that preserves the original file descriptor
-type fdWriteCloser struct {
-	io.WriteCloser
-	fd uintptr
-}
-
-func (w *fdWriteCloser) Fd() uintptr {
 	return w.fd
 }
 

@@ -34,7 +34,7 @@ func mainRun() exitCode {
 	buildDate := build.Date
 	buildVersion := build.Version
 
-	cmdFactory := factory.New(buildVersion)
+	cmdFactory := factory.New()
 
 	stderr := cmdFactory.IOStreams.ErrOut
 
@@ -42,7 +42,7 @@ func mainRun() exitCode {
 
 	cfg, err := cmdFactory.Config()
 	if err != nil {
-		fmt.Fprintf(stderr, "failed to read configuration:  %s\n", err)
+		_, _ = fmt.Fprintf(stderr, "failed to read configuration:  %s\n", err)
 		return exitError
 	}
 
@@ -50,7 +50,7 @@ func mainRun() exitCode {
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		// require that the user is authenticated before running most commands
 		if cmdutil.IsAuthCheckEnabled(cmd) && !cmdutil.CheckAuth(cfg) {
-			fmt.Fprintf(stderr, authHelp())
+			_, _ = fmt.Fprintf(stderr, authHelp())
 			return authError
 		}
 
@@ -66,7 +66,7 @@ func mainRun() exitCode {
 		} else if cmdutil.IsUserCancellation(err) {
 			if errors.Is(err, terminal.InterruptErr) {
 				// ensure the next shell prompt has its own line
-				fmt.Fprintf(stderr, "\n")
+				_, _ = fmt.Fprintf(stderr, "\n")
 			}
 			return exitCancel
 		} else if errors.Is(err, authError) {
@@ -76,7 +76,7 @@ func mainRun() exitCode {
 			return exitOK
 		} else if errors.As(err, &noResultsError) {
 			if cmdFactory.IOStreams.IsStdoutTTY() {
-				fmt.Fprintln(stderr, noResultsError.Error())
+				_, _ = fmt.Fprintln(stderr, noResultsError.Error())
 			}
 			// no results are not treated as a command failure
 			return exitOK
@@ -100,13 +100,13 @@ func authHelp() string {
 }
 
 func printError(out io.Writer, err error, cmd *cobra.Command) {
-	fmt.Fprintln(out, err)
+	_, _ = fmt.Fprintln(out, err)
 
 	var flagError *cmdutil.FlagError
 	if errors.As(err, &flagError) || strings.HasPrefix(err.Error(), "unknown command ") {
 		if !strings.HasSuffix(err.Error(), "\n") {
-			fmt.Fprintln(out)
+			_, _ = fmt.Fprintln(out)
 		}
-		fmt.Fprintln(out, cmd.UsageString())
+		_, _ = fmt.Fprintln(out, cmd.UsageString())
 	}
 }

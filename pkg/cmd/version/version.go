@@ -8,12 +8,12 @@ import (
 	"strings"
 )
 
-func NewCmdVersion(f *cmdutil.Factory, version, buildDate string) *cobra.Command {
+func NewCmdVersion(f *cmdutil.Factory) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:    "version",
 		Hidden: true,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Fprint(f.IOStreams.Out, cmd.Root().Annotations["versionInfo"])
+			_, _ = fmt.Fprint(f.IOStreams.Out, cmd.Root().Annotations["versionInfo"])
 		},
 	}
 
