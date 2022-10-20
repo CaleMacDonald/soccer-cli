@@ -4,6 +4,7 @@ import (
 	"fmt"
 	footballdata "github.com/CaleMacDonald/football-data"
 	"github.com/CaleMacDonald/soccer-cli/internal/config"
+	"github.com/CaleMacDonald/soccer-cli/internal/statistics"
 	"github.com/CaleMacDonald/soccer-cli/pkg/cmdutil"
 	"github.com/CaleMacDonald/soccer-cli/pkg/iostreams"
 	"github.com/jedib0t/go-pretty/v6/table"
@@ -44,6 +45,8 @@ func leaguesRun(opts *Options) error {
 	if err != nil {
 		return err
 	}
+
+	statistics.TrackLeaguesRequest()
 
 	authToken := cfg.AuthToken()
 	api := footballdata.NewFootballData(authToken)

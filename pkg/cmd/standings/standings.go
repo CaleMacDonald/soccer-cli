@@ -2,6 +2,7 @@ package standings
 
 import (
 	footballdata "github.com/CaleMacDonald/football-data"
+	"github.com/CaleMacDonald/soccer-cli/internal/statistics"
 	"github.com/CaleMacDonald/soccer-cli/pkg/cmdutil"
 	"github.com/CaleMacDonald/soccer-cli/pkg/completion"
 	"github.com/jedib0t/go-pretty/v6/table"
@@ -18,6 +19,8 @@ func NewCmdStandings(f *cmdutil.Factory) *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			statistics.TrackStandingsRequest()
 
 			authToken := config.AuthToken()
 			api := footballdata.NewFootballData(authToken)
