@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+env:
+  STATHAT_SOCCER_CLI_API_KEY: ${{secrets.STATHAT_SOCCER_CLI_API_KEY}}
+
 jobs:
   release:
     runs-on: ubuntu-latest
