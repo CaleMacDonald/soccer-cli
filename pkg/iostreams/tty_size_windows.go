@@ -1,6 +1,11 @@
+//go:build windows
+
 package iostreams
 
-import "os"
+import (
+	"golang.org/x/term"
+	"os"
+)
 
 func ttySize() (int, int, error) {
 	f, err := os.Open("CONOUT$")
